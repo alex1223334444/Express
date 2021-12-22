@@ -2,22 +2,29 @@ var express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Recipe = require('../models/recipe');
-
+const cors=require('cors');
+const { append } = require('express/lib/response');
 const dbURL='mongodb+srv://alexudrea:passw123@cluster0.dhclb.mongodb.net/cookbok?retryWrites=true&w=majority';//misspelled cookbook and cant edit so cookbok it is
-
+router.use(
+  cors ({
+    origin: "*"
+  })
+);
 mongoose.connect(dbURL)
 .then((result) => console.log(result))
 .catch((err) => console.log(err));
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+// GET users listing.
+router.get('/', function(req, res) {
+  res.setHeader("Content-Type", "text/html");
+  res.write("<p>Hello World</p>");
+  res.end();
 });
 
 router.get('/add_recipe', (req, res) => {
   const recipe = new Recipe({
-      title: 'omlette',
-      ingredients: '5 eggs',
+      title: 'omlette 2',
+      ingredients: '53 eggs',
       time_to_prepare: 0.5,
       how_to_prepare: 'just do it'
   })
@@ -27,11 +34,33 @@ router.get('/add_recipe', (req, res) => {
   .catch((err) => {console.log(err)});
 })
 
+router.post('/add_recipe', (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*")
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "1800");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader( "Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, PATCH, OPTIONS" );   
+  const recipe = new Recipe(req.body);
+  recipe.save()
+  .then((result) => {res.send(result)})
+  .catch((err) => {console.log(err)});
+})
+
+
+
+
 router.get('/all_recipes', (req, res) => {
+  res.setHeader("Content-Type", "text/html");
   Recipe.find()
-  .then((result) => {res.send(result);})
+  .then((result) => {
+    res.send(result);
+    res.end();})
   .catch((err) => {console.log(err)})
 })
 
+router.get('/single_recipe', (req, res) =>{
+  Recipe.findById();
+})
+ 
 
 module.exports = router;
