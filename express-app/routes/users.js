@@ -2,6 +2,8 @@ var express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Recipe = require('../models/recipe');
+const User = require('../models/user');
+
 const cors=require('cors');
 const { append } = require('express/lib/response');
 const dbURL='mongodb+srv://alexudrea:passw123@cluster0.dhclb.mongodb.net/cookbok?retryWrites=true&w=majority';//misspelled cookbook and cant edit so cookbok it is
@@ -34,6 +36,18 @@ router.get('/add_recipe', (req, res) => {
   .catch((err) => {console.log(err)});
 })
 
+router.get('/add_user', (req, res) => {
+  const user = new User({
+      username: 'user2',
+      password: 'pass2'
+  })
+
+  user.save()
+  .then((result) => {res.send(result)})
+  .catch((err) => {console.log(err)});
+})
+
+
 router.post('/add_recipe', (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*")
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -58,9 +72,24 @@ router.get('/all_recipes', (req, res) => {
   .catch((err) => {console.log(err)})
 })
 
-router.get('/single_recipe', (req, res) =>{
-  Recipe.findById();
+router.get('/all_users', (req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  User.find()
+  .then((result) => {
+    res.send(result);
+    res.end();})
+  .catch((err) => {console.log(err)})
 })
- 
+
+
+router.get('/single_recipe:_id', (req, res) =>{
+  let id = req.params._id;
+  Recipe.findById(id)
+  .then((result) => {
+    res.send(result);
+    res.end();})
+  .catch((err) => {console.log(err)})
+})
+
 
 module.exports = router;
