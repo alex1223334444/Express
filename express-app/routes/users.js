@@ -82,14 +82,15 @@ router.get('/all_users', (req, res) => {
 })
 
 
-router.get('/single_recipe:_id', (req, res) =>{
-  let id = req.params._id;
-  Recipe.findById(id)
-  .then((result) => {
-    res.send(result);
-    res.end();})
-  .catch((err) => {console.log(err)})
-})
+router.get('/single_recipe', (req, res) =>{
+
+  let title = req.params.title;
+  console.log(title);
+  Recipe.findOne( {title: title} ,function (err, result) {
+    if (err) throw err;
+    console.log(result);}
+  )});
+
 
 
 module.exports = router;
